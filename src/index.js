@@ -4,6 +4,7 @@ import Notiflix from 'notiflix';
 const gallery = document.querySelector('.gallery');
 const searchInput = document.querySelector('.search-input');
 const searchForm = document.querySelector('.search-form');
+const loadMoreButton = document.querySelector('.load-more');
 
 const BASE_URL = 'https://pixabay.com/api/';
 const MY_KEY = '35000498-2935018b21b8b3d2f50cbcb0f';
@@ -14,6 +15,8 @@ const params = new URLSearchParams({
   safesearch: 'true',
   per_page: 40,
 });
+
+let page = 1;
 
 const createPhotosList = photos => {
   const photosList = photos
@@ -38,6 +41,7 @@ const createPhotosList = photos => {
     )
     .join('');
   gallery.innerHTML = photosList;
+  loadMoreButton.classList.remove('is-hidden');
 };
 
 const managePhotosData = photos => {
@@ -54,7 +58,7 @@ const managePhotosData = photos => {
 const getPhotosData = async searchedPhoto => {
   try {
     const response = await axios.get(
-      `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}&page=3`
+      `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}&${page}`
     );
     const photos = await response.data.hits;
     managePhotosData(photos);
