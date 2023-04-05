@@ -9,6 +9,8 @@ const loadMoreButton = document.querySelector('.load-more');
 const BASE_URL = 'https://pixabay.com/api/';
 const MY_KEY = '35000498-2935018b21b8b3d2f50cbcb0f';
 
+let page = 1;
+
 const params = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
@@ -16,13 +18,12 @@ const params = new URLSearchParams({
   per_page: 40,
 });
 
-let page = 1;
-
+//alternative text doesn't show!!!
 const createPhotosList = photos => {
   const photosList = photos
     .map(
       photo => `<div class="photo-card">
-  <img src="${photo.webformatURL}" alt="${photo.keys}" loading="lazy" />
+  <img src="${photo.webformatURL}" alt=${photo.keys} loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b> ${photo.likes}
@@ -40,7 +41,10 @@ const createPhotosList = photos => {
 </div>`
     )
     .join('');
-  gallery.innerHTML = photosList;
+  const div = document.createElement('div');
+  div.innerHTML = photosList;
+  div.classList.add('gallery');
+  gallery.insertAdjacentElement('beforeend', div);
   loadMoreButton.classList.remove('is-hidden');
 };
 
@@ -51,16 +55,17 @@ const managePhotosData = photos => {
     );
   } else {
     createPhotosList(photos);
-    console.log(photos);
   }
 };
 
+//totalNumberOfPhoto ???
 const getPhotosData = async searchedPhoto => {
   try {
     const response = await axios.get(
-      `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}&${page}`
+      `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}&page=${page}`
     );
     const photos = await response.data.hits;
+    const totalNumberOfPhotos = await response.data.totalHits;
     managePhotosData(photos);
   } catch (error) {
     console.log(error);
@@ -69,6 +74,8 @@ const getPhotosData = async searchedPhoto => {
 
 const submitFunction = e => {
   e.preventDefault();
+  page = 1;
+  gallery.innerHTML = '';
   let searchedPhoto = searchInput.value;
   if (!searchedPhoto) {
     return;
@@ -77,4 +84,12 @@ const submitFunction = e => {
   }
 };
 
+const loadMorePhotos = () => {
+  loadMoreButton.classList.add('is-hidden');
+  page = page + 1;
+  let searchedPhoto = searchInput.value;
+  getPhotosData(searchedPhoto);
+};
+
 searchForm.addEventListener('submit', submitFunction);
+loadMoreButton.addEventListener('click', loadMorePhotos);
