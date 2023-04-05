@@ -1,6 +1,10 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
 
+const gallery = document.querySelector('.gallery');
+const searchInput = document.querySelector('.search-input');
+const searchForm = document.querySelector('.search-form');
+
 const BASE_URL = 'https://pixabay.com/api/';
 const MY_KEY = '35000498-2935018b21b8b3d2f50cbcb0f';
 
@@ -8,12 +12,8 @@ const params = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: 'true',
+  per_page: 40,
 });
-
-let searchedPhoto = 'cat';
-const url = `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}`;
-
-const gallery = document.querySelector('.gallery');
 
 const createPhotosList = photos => {
   const photosList = photos
@@ -51,9 +51,11 @@ const managePhotosData = photos => {
   }
 };
 
-const getPhotosData = async () => {
+const getPhotosData = async searchedPhoto => {
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(
+      `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}&page=3`
+    );
     const photos = await response.data.hits;
     managePhotosData(photos);
   } catch (error) {
@@ -61,40 +63,14 @@ const getPhotosData = async () => {
   }
 };
 
-getPhotosData();
+const submitFunction = e => {
+  e.preventDefault();
+  let searchedPhoto = searchInput.value;
+  if (!searchedPhoto) {
+    return;
+  } else {
+    getPhotosData(searchedPhoto);
+  }
+};
 
-//FETCH WITHOUT ASYNC/AWAIT
-// fetch(url)
-//   .then(response => {
-//     if (!response.ok) {
-//       Notiflix.Notify.failure(
-//         'Sorry, there are no images matching your search query. Please try again.'
-//       );
-//     }
-//     return response.json();
-//   })
-//   .then(data => {
-//     if (data.hits.length === 0) {
-//       Notiflix.Notify.failure(
-//         'Sorry, there are no images matching your search query. Please try again.'
-//       );
-//     }
-//     console.log(data.hits);
-//   });
-
-// const fetchPhotos = async () => {
-//   try {
-//     const response = await axios.get(
-//       `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}`
-//     );
-//     const photos = await response.json();
-//     // return photos;
-//     console.log(photos);
-//   } catch (error) {
-//     Notiflix.Notify.failure(
-//       'Sorry, there are no images matching your search query. Please try again.'
-//     );
-//   }
-// };
-
-// fetchPhotos();
+searchForm.addEventListener('submit', submitFunction);

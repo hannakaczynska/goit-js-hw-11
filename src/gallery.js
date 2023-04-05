@@ -1,22 +1,43 @@
-// const createPhotosList = photos => {
-//   const photosList = photos.map(
-//     photo => `<div class="photo-card">
-//   <img src="${photo.webformatURL}" alt="${photo.keys}" loading="lazy" />
-//   <div class="info">
-//     <p class="info-item">
-//       <b>Likes</b> ${photo.likes}
-//     </p>
-//     <p class="info-item">
-//       <b>Views</b> ${photo.views}
-//     </p>
-//     <p class="info-item">
-//       <b>Comments</b> ${photo.comments}
-//     </p>
-//     <p class="info-item">
-//       <b>Downloads</b> ${photo.downloads}
-//     </p>
-//   </div>
-// </div>`
-//   );
-//   innerHTML = photosList
+// getPhotosData();
+// function hi() {
+//   console.log('hi');
+// }
+
+// searchInput.addEventListener();
+// searchButton.addEventListener('click', hi);
+
+//FETCH WITHOUT ASYNC/AWAIT
+// fetch(url)
+//   .then(response => {
+//     if (!response.ok) {
+//       Notiflix.Notify.failure(
+//         'Sorry, there are no images matching your search query. Please try again.'
+//       );
+//     }
+//     return response.json();
+//   })
+//   .then(data => {
+//     if (data.hits.length === 0) {
+//       Notiflix.Notify.failure(
+//         'Sorry, there are no images matching your search query. Please try again.'
+//       );
+//     }
+//     console.log(data.hits);
+//   });
+
+// const fetchPhotos = async () => {
+//   try {
+//     const response = await axios.get(
+//       `${BASE_URL}?key=${MY_KEY}&q=${searchedPhoto}&${params}`
+//     );
+//     const photos = await response.json();
+//     // return photos;
+//     console.log(photos);
+//   } catch (error) {
+//     Notiflix.Notify.failure(
+//       'Sorry, there are no images matching your search query. Please try again.'
+//     );
+//   }
 // };
+
+// fetchPhotos();
