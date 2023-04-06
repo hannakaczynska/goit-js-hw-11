@@ -18,12 +18,12 @@ const params = new URLSearchParams({
   per_page: 40,
 });
 
-//alternative text doesn't show!!!
 const createPhotosList = photos => {
-  const photosList = photos
-    .map(
-      photo => `<div class="photo-card">
-  <img src="${photo.webformatURL}" alt=${photo.keys} loading="lazy" />
+  try {
+    const photosList = photos
+      .map(
+        photo => `<div class="photo-card">
+  <img src="${photo.webformatURL}" alt='${photo.tags}' loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b> ${photo.likes}
@@ -39,26 +39,50 @@ const createPhotosList = photos => {
     </p>
   </div>
 </div>`
-    )
-    .join('');
-  const div = document.createElement('div');
-  div.innerHTML = photosList;
-  div.classList.add('gallery');
-  gallery.insertAdjacentElement('beforeend', div);
-  loadMoreButton.classList.remove('is-hidden');
-};
-
-const managePhotosData = photos => {
-  if (photos.length === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  } else {
-    createPhotosList(photos);
+      )
+      .join('');
+    const div = document.createElement('div');
+    div.innerHTML = photosList;
+    div.classList.add('gallery');
+    gallery.insertAdjacentElement('beforeend', div);
+  } finally {
+    loadMoreButton.classList.remove('is-hidden');
   }
 };
 
-//totalNumberOfPhoto ???
+const add = (() => {
+  let counter = 0;
+  return function (data, reset = false) {
+    if (reset) {
+      counter = 0;
+    }
+    counter += data;
+    return counter;
+  };
+})();
+
+const managePhotosData = (photos, totalNumberOfPhotos, page) => {
+  if (page === 1 && totalNumberOfPhotos > 0) {
+    Notiflix.Notify.success(`Hooray! We found ${totalNumberOfPhotos} images.`);
+  }
+  if (totalNumberOfPhotos === 0) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again'
+    );
+    return;
+  } else {
+    createPhotosList(photos);
+    let photoSum = add(photos.length);
+    console.log(photoSum);
+    if (photoSum === totalNumberOfPhotos) {
+      loadMoreButton.classList.add('is-hidden');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+  }
+};
+
 const getPhotosData = async searchedPhoto => {
   try {
     const response = await axios.get(
@@ -66,7 +90,7 @@ const getPhotosData = async searchedPhoto => {
     );
     const photos = await response.data.hits;
     const totalNumberOfPhotos = await response.data.totalHits;
-    managePhotosData(photos);
+    managePhotosData(photos, totalNumberOfPhotos, page);
   } catch (error) {
     console.log(error);
   }
@@ -74,6 +98,8 @@ const getPhotosData = async searchedPhoto => {
 
 const submitFunction = e => {
   e.preventDefault();
+  add(0, true);
+  loadMoreButton.classList.add('is-hidden');
   page = 1;
   gallery.innerHTML = '';
   let searchedPhoto = searchInput.value;
