@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const searchInput = document.querySelector('.search-input');
@@ -11,10 +13,14 @@ const MY_KEY = '35000498-2935018b21b8b3d2f50cbcb0f';
 
 let page = 1;
 
+// let lightbox = new SimpleLightbox('.photo-card a', {
+//   captionDelay: 250,
+// });
+
 const params = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
-  safesearch: 'true',
+  safesearch: true,
   per_page: 40,
 });
 
@@ -34,7 +40,9 @@ const createPhotosList = photos => {
     const photosList = photos
       .map(
         photo => `<div class="photo-card">
+  <a href="${photo.largeImageURL}">
   <img src="${photo.webformatURL}" alt="${photo.tags}" loading="lazy" />
+  </a>
   <div class="info">
     <p class="info-item">
       <b>Likes</b> ${photo.likes}
