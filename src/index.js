@@ -1,7 +1,5 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
-// import SimpleLightbox from 'simplelightbox';
-// import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const searchInput = document.querySelector('.search-input');
@@ -20,12 +18,23 @@ const params = new URLSearchParams({
   per_page: 40,
 });
 
+const addHTML = (() => {
+  let innerHTML = '';
+  return function (data, reset = false) {
+    if (reset) {
+      innerHTML = '';
+    }
+    innerHTML += data;
+    return innerHTML;
+  };
+})();
+
 const createPhotosList = photos => {
   try {
     const photosList = photos
       .map(
         photo => `<div class="photo-card">
-  <img src="${photo.webformatURL}" alt='${photo.tags}' loading="lazy" />
+  <img src="${photo.webformatURL}" alt="${photo.tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b> ${photo.likes}
@@ -43,10 +52,7 @@ const createPhotosList = photos => {
 </div>`
       )
       .join('');
-    const div = document.createElement('div');
-    div.innerHTML = photosList;
-    div.classList.add('gallery');
-    gallery.insertAdjacentElement('beforeend', div);
+    gallery.innerHTML = addHTML(photosList);
   } finally {
     loadMoreButton.classList.remove('is-hidden');
   }
@@ -75,7 +81,6 @@ const managePhotosData = (photos, totalNumberOfPhotos, page) => {
   } else {
     createPhotosList(photos);
     let photoSum = add(photos.length);
-    console.log(photoSum);
     if (photoSum === totalNumberOfPhotos) {
       loadMoreButton.classList.add('is-hidden');
       Notiflix.Notify.info(
@@ -103,7 +108,7 @@ const submitFunction = e => {
   add(0, true);
   loadMoreButton.classList.add('is-hidden');
   page = 1;
-  gallery.innerHTML = '';
+  addHTML('', true);
   let searchedPhoto = searchInput.value;
   if (!searchedPhoto) {
     return;
