@@ -13,10 +13,6 @@ const MY_KEY = '35000498-2935018b21b8b3d2f50cbcb0f';
 
 let page = 1;
 
-// let lightbox = new SimpleLightbox('.photo-card a', {
-//   captionDelay: 250,
-// });
-
 const params = new URLSearchParams({
   image_type: 'photo',
   orientation: 'horizontal',
@@ -61,6 +57,7 @@ const createPhotosList = photos => {
       )
       .join('');
     gallery.innerHTML = addHTML(photosList);
+    new SimpleLightbox('.photo-card a').refresh();
   } finally {
     loadMoreButton.classList.remove('is-hidden');
   }
@@ -82,10 +79,10 @@ const managePhotosData = (photos, totalNumberOfPhotos, page) => {
     Notiflix.Notify.success(`Hooray! We found ${totalNumberOfPhotos} images.`);
   }
   if (totalNumberOfPhotos === 0) {
+    gallery.innerHTML = addHTML('', true);
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again'
     );
-    return;
   } else {
     createPhotosList(photos);
     let photoSum = add(photos.length);
