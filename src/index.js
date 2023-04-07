@@ -2,6 +2,7 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+// import debounce from 'lodash.debounce';
 
 const gallery = document.querySelector('.gallery');
 const searchInput = document.querySelector('.search-input');
@@ -85,8 +86,8 @@ const managePhotosData = (photos, totalNumberOfPhotos, page) => {
     );
   } else {
     createPhotosList(photos);
-    let photoSum = add(photos.length);
-    if (photoSum === totalNumberOfPhotos) {
+    const amountOfPages = add(photos.length);
+    if (amountOfPages === totalNumberOfPhotos) {
       loadMoreButton.classList.add('is-hidden');
       Notiflix.Notify.info(
         "We're sorry, but you've reached the end of search results."
@@ -122,6 +123,7 @@ const submitFunction = e => {
   }
 };
 
+// Dodawanie większej ilości zdjęc za pomocą przycisku
 const loadMorePhotos = () => {
   loadMoreButton.classList.add('is-hidden');
   page = page + 1;
@@ -129,5 +131,17 @@ const loadMorePhotos = () => {
   getPhotosData(searchedPhoto);
 };
 
+//scroll
+// const scroll = () => {
+//   const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+//   const scrolled = window.scrollY;
+//   if (scrolled > scrollable - 1500) {
+//     page = page + 1;
+//     let searchedPhoto = searchInput.value;
+//     getPhotosData(searchedPhoto);
+//   }
+// };
+
+// window.addEventListener('scroll', debounce(scroll, 200));
 searchForm.addEventListener('submit', submitFunction);
 loadMoreButton.addEventListener('click', loadMorePhotos);
